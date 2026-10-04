@@ -50,8 +50,9 @@ jobs:
 
       - name: Render every environment against the chart
         run: |
+          set -euo pipefail
           for env in envs/*/; do
             echo "==> $env"
-            helm template gitops-app app-repo/helm/app -f "${env}values.yaml" --namespace app \
-              | kubeconform -strict -summary -kubernetes-version "$KUBERNETES_VERSION" -
+            helm template gitops-app app-repo/helm/app -f "${env}values.yaml" --namespace app > rendered.yaml
+            kubeconform -strict -summary -kubernetes-version "$KUBERNETES_VERSION" rendered.yaml
           done
