@@ -2,3 +2,6 @@
 image:
   repository: 921876749389.dkr.ecr.eu-central-1.amazonaws.com/gitops-platform/app
   tag: f9c6e6505a5a97b0fb67d4eb8d39eb01431176d8 # immutable git SHA
+
+autoscaling:
+  enabled: true # needs metrics-server
