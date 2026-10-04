@@ -1,0 +1,46 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: gitops-app-dev
+  namespace: argocd
+  labels:
+    app.kubernetes.io/part-of: gitops-platform
+    environment: dev
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: gitops-platform
+  sources:
+    - repoURL: https://github.com/joue-zero/gitops-platform.git
+      targetRevision: main
+      path: helm/app
+      helm:
+        releaseName: gitops-app
+        valueFiles:
+          - $values/envs/dev/values.yaml
+    - repoURL: https://github.com/joue-zero/gitops-platform-config.git
+      targetRevision: main
+      ref: values
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: app
+  revisionHistoryLimit: 3
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+      - PruneLast=true
+    managedNamespaceMetadata:
+      labels:
+        pod-security.kubernetes.io/enforce: restricted
+        pod-security.kubernetes.io/audit: restricted
+        pod-security.kubernetes.io/warn: restricted
+    retry:
+      limit: 5
+      backoff:
+        duration: 10s
+        factor: 2
+        maxDuration: 3m

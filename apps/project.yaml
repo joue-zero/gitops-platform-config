@@ -1,0 +1,22 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: gitops-platform
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1" # must exist before the Applications that use it
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  description: Workloads of the gitops-platform
+  sourceRepos:
+    - https://github.com/joue-zero/gitops-platform.git
+    - https://github.com/joue-zero/gitops-platform-config.git
+  destinations:
+    - server: https://kubernetes.default.svc
+      namespace: app
+  clusterResourceWhitelist:
+    - group: ""
+      kind: Namespace # needed by CreateNamespace, nothing else cluster-scoped
+  orphanedResources:
+    warn: true
