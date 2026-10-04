@@ -1,4 +1,4 @@
 # Overrides for helm/app/values.yaml in the dev environment.
 image:
   repository: 921876749389.dkr.ecr.eu-central-1.amazonaws.com/gitops-platform/app
-  tag: a64e0b3631f23438e753e8be3192528f5419099e # immutable git SHA
+  tag: f9c6e6505a5a97b0fb67d4eb8d39eb01431176d8 # immutable git SHA
