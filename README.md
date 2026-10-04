@@ -25,14 +25,14 @@ The dev environment is destroyed every night. A recreated cluster gets Argo CD f
 |---|---|
 | [`apps/project.yaml`](apps/project.yaml) | AppProject: allowed source repositories, destination namespace, and cluster-scoped resources (Namespace only). |
 | [`apps/gitops-app-dev.yaml`](apps/gitops-app-dev.yaml) | Dev Application. Chart from the application repository, values from this one; enforces the `restricted` Pod Security profile. |
-| [`envs/dev/values.yaml`](envs/dev/values.yaml) | Dev overrides of the chart defaults. |
+| [`apps/platform-addons-project.yaml`](apps/platform-addons-project.yaml) | AppProject for upstream add-ons, which need the cluster-scoped RBAC the app project deliberately lacks. |
+| [`apps/metrics-server.yaml`](apps/metrics-server.yaml) | metrics-server from its upstream chart, so the HPA can read CPU usage. |
+| [`envs/dev/values.yaml`](envs/dev/values.yaml) | Dev overrides of the chart defaults: image tag, ALB Ingress and the HPA. |
 | [`.github/workflows/validate.yml`](.github/workflows/validate.yml) | CI: validates the manifests against the Argo CD CRD schemas and renders each environment against the real chart. |
 
 ## Release and rollback
 
-A release is a commit that sets `image.tag` in `envs/<env>/values.yaml` to the git SHA of an image already in ECR. A rollback is `git revert` of that commit.
-
-Not built yet: a job in the application repository that opens that commit after each image push. It needs a credential with write access to this repository (a GitHub App or fine-grained token), so the tag is edited by hand for now.
+A release is a commit that sets `image.tag` in `envs/<env>/values.yaml` to the git SHA of an image already in ECR. The `update-gitops` job in the application repository's CI makes that commit after every image push (it needs the `GITOPS_CONFIG_TOKEN` secret there). A rollback is `git revert` of that commit.
 
 ## Using Argo CD
 
